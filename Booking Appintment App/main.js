@@ -29,7 +29,10 @@ function addItem(e) {
   let obj = { name: name, email: email, phone: phone };
 
   axios
-    .post("https://reqres.in/api/users", obj)
+    .post(
+      "https://crudcrud.com/api/f269c597a013499ea400c9eadc023166/AppointmentData",
+      obj
+    )
     .then((res) => console.log(`post data sucessful`))
     .catch((err) => console.log(err));
 
@@ -102,3 +105,43 @@ function editItem(e) {
     }
   }
 }
+
+window.addEventListener("DOMContentLoaded", function () {
+  axios
+    .get(
+      "https://crudcrud.com/api/f269c597a013499ea400c9eadc023166/AppointmentData"
+      // "https://reqres.in/api/users?page=2"
+    )
+    .then((res) => {
+      let data = res.data;
+      data.forEach((item) => {
+        var li = document.createElement("li");
+
+        li.className = "";
+        li.id = item._id;
+
+        li.appendChild(
+          document.createTextNode(
+            item.name + " - " + item.email + " - " + item.phone
+          )
+        );
+
+        var deleteBtn = document.createElement("button");
+        var editBtn = document.createElement("button");
+
+        deleteBtn.className = "btn btn-danger btn-sm float-right delete ms-5";
+        editBtn.className = "btn btn-primary btn-sm float-right edit ms-2";
+
+        deleteBtn.appendChild(document.createTextNode("🗑️"));
+        editBtn.appendChild(document.createTextNode("✏️"));
+
+        li.appendChild(deleteBtn);
+        li.appendChild(editBtn);
+
+        itemList.appendChild(li);
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
