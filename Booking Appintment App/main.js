@@ -68,8 +68,20 @@ function removeItem(e) {
   if (e.target.classList.contains("delete")) {
     if (confirm("Are You Sure?")) {
       var li = e.target.parentElement;
-      itemList.removeChild(li);
-      localStorage.removeItem(li.name);
+      axios
+        .delete(
+          `https://crudcrud.com/api/f269c597a013499ea400c9eadc023166/AppointmentData/${li.id}`
+          // `https://reqres.in/api/users?page=2/${li.id}`
+        )
+        .then((res) => {
+          itemList.removeChild(li);
+          console.log("deleted");
+        })
+        .catch((err) => {
+          console.log(li);
+          console.log(li.id);
+          console.log(err);
+        });
     }
   }
 }
@@ -113,12 +125,14 @@ window.addEventListener("DOMContentLoaded", function () {
       // "https://reqres.in/api/users?page=2"
     )
     .then((res) => {
-      let data = res.data;
+      let data = res.data; // For crud crud
+      // let data = res.data.data; // For reqres
       data.forEach((item) => {
         var li = document.createElement("li");
 
         li.className = "";
-        li.id = item._id;
+        li.id = item._id; // For crud crud
+        // li.id = item.id; // For reqres
 
         li.appendChild(
           document.createTextNode(
