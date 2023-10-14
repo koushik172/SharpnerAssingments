@@ -108,12 +108,27 @@ function editItem(e) {
   if (e.target.classList.contains("edit")) {
     if (confirm("Are You Sure?")) {
       var li = e.target.parentElement;
-      let data = JSON.parse(localStorage.getItem(li.name));
-      localStorage.removeItem(data.name);
-      document.getElementById("name").value = data.name;
-      document.getElementById("email").value = data.email;
-      document.getElementById("phone").value = data.phone;
+      let data = li.textContent;
+      data = data.split(" - ");
+      console.log(data);
+      document.getElementById("name").value = data[0];
+      document.getElementById("email").value = data[1];
+      document.getElementById("phone").value = data[2];
       itemList.removeChild(li);
+      axios
+        .delete(
+          `https://crudcrud.com/api/f269c597a013499ea400c9eadc023166/AppointmentData/${li.id}`
+          // `https://reqres.in/api/users?page=2/${li.id}`
+        )
+        .then((res) => {
+          itemList.removeChild(li);
+          console.log("deleted");
+        })
+        .catch((err) => {
+          console.log(li);
+          console.log(li.id);
+          console.log(err);
+        });
     }
   }
 }
@@ -136,7 +151,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
         li.appendChild(
           document.createTextNode(
-            item.name + " - " + item.email + " - " + item.phone
+            item.name + " - " + item.email + " - " + item.phone + " - "
           )
         );
 
