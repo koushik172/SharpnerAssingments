@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>General Store Seller Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"
+      integrity="sha512-emSwuKiMyYedRwflbZB2ghzX8Cw8fmNVgZ6yQNNXXagFzFOaQmbvQ1vmDkddHjm5AITcBIZfC7k4ShQSjgPAmQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body class="bg-slate-300">
+    <div class="flex justify-center">
+      <h1 class="text-4xl p-4">General Store Dashboard</h1>
+    </div>
+    <div class="flex gap-8 justify-center pt-8">
+      <div class="flex flex-col justify-center items-center">
+        <label>Item Name</label>
+        <input
+          id="itemName"
+          class="px-2 py-2 rounded-2xl"
+          required="true"
+          type="text"
+        />
+      </div>
+      <div class="flex flex-col justify-center items-center">
+        <label>Description</label>
+        <input
+          id="itemDescription"
+          class="px-2 py-2 rounded-2xl"
+          required="true"
+          type="text"
+        />
+      </div>
+      <div class="flex flex-col justify-center items-center">
+        <label>Price</label>
+        <input
+          id="itemPrice"
+          class="px-2 py-2 rounded-2xl"
+          required="true"
+          type="number"
+        />
+      </div>
+      <div class="flex flex-col justify-center items-center">
+        <label>Quantity</label>
+        <input
+          id="itemQuantity"
+          class="px-2 py-2 rounded-2xl"
+          required="true"
+          type="number"
+        />
+      </div>
+    </div>
+    <div class="flex justify-center">
+      <button id="addItem" class="bg-blue-300 px-4 py-2 rounded-2xl mt-8">
+        Add Item
+      </button>
+    </div>
+
+    <div class="my-10">
+      <ol id="itemList" class="text-2xl text-zinc-700"></ol>
+    </div>
+    <script src="./main.js"></script>
+  </body>
+</html>
