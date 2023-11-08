@@ -1,13 +1,21 @@
+let endpoint = "5c4e40dfe916442c8dfd4bc680cf4f60";
+
 let addButton = document.getElementById("addItem");
 let itemList = document.getElementById("itemList");
 
-itemList.addEventListener("click", sellItem);
-
+// FUNCTION TO LIST NEW ITEMS
 addButton.addEventListener("click", () => {
+  let errorCheck = false;
+
   let itemName = document.getElementById("itemName").value;
   let itemDescription = document.getElementById("itemDescription").value;
-  let itemPrice = document.getElementById("itemPrice").value;
-  let itemQuantity = document.getElementById("itemQuantity").value;
+  let itemPrice = parseInt(document.getElementById("itemPrice").value);
+  let itemQuantity = parseInt(document.getElementById("itemQuantity").value);
+
+  if (itemName === "") errorCheck = true;
+  if (itemDescription === "") errorCheck = true;
+  if (isNaN(itemPrice)) errorCheck = true;
+  if (isNaN(itemQuantity)) errorCheck = true;
 
   let obj = {
     itemName: itemName,
@@ -15,86 +23,210 @@ addButton.addEventListener("click", () => {
     itemPrice: itemPrice,
     itemQuantity,
   };
-
-  axios
-    .post(
-      "https://crudcrud.com/api/b46143a747d147569e8d1f11a89c8ea2/Items",
-      //   "https://reqres.in/api/users",
-      obj
-    )
-    .then((res) => {
-      let newLi = document.createElement("li");
-      newLi.name = obj.itemName;
-      newLi.id = res.data._id;
-      newLi.className = "flex justify-around items-center gap-16 mx-[20%] my-2";
-
-      newLi.innerHTML = `<p>${obj.itemName} - ${obj.itemDescription} - ${obj.itemPrice} - ${obj.itemQuantity}</p>
-    <div class="flex gap-16">
-      <button id="1" class="bg-green-200 rounded-2xl px-4 py-2 sell">Buy 1</button>
-      <button id="2" class="bg-green-200 rounded-2xl px-4 py-2 sell">Buy 2</button>
-      <button id="3" class="bg-green-200 rounded-2xl px-4 py-2 sell">Buy 3</button>
-    </div>`;
-
-      itemList.appendChild(newLi);
-
-      document.getElementById("itemName").value = "";
-      document.getElementById("itemDescription").value = "";
-      document.getElementById("itemPrice").value = "";
-      document.getElementById("itemQuantity").value = "";
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
-
-function sellItem(e) {
-  if (e.target.classList.contains("sell")) {
-    let sellCount = e.target.id;
-    let itemId = e.target.parentElement.parentElement.id;
-    let stock =
-      e.target.parentElement.parentElement.firstChild.textContent.split(" - ");
-
-    console.log(itemId);
-
-    let newObj = {
-      itemName: stock[0],
-      itemDescription: stock[1],
-      itemPrice: stock[2],
-      itemQuantity: stock[3] - sellCount,
-    };
+  if (errorCheck) {
+    alert("Enter values correctly !!!");
+  } else {
     axios
-      .put(
-        `https://crudcrud.com/api/b46143a747d147569e8d1f11a89c8ea2/Items/${itemId}`,
-        newObj
-      )
+      .post(`https://crudcrud.com/api/${endpoint}/Items`, obj)
       .then((res) => {
-        console.log(res);
-        window.location.reload();
+        let newLi = document.createElement("li");
+        newLi.name = obj.itemName;
+        newLi.id = res.data._id;
+        newLi.className = "items-center gap-16 mx-[10%] my-2";
+
+        newLi.innerHTML = `
+        <form class="flex justify-between items-center" >
+
+          <p class="w-1/2 text-slate-100">${obj.itemName} - ${obj.itemDescription} - ${obj.itemPrice} - ${obj.itemQuantity}</p>
+          <div class="flex gap-10 w-fit items-center text-sm">
+
+          <div class="flex gap-2">
+
+            <input id="sell" placeholder="SELL" class="bg-slate-200 p-2 rounded-md text-center w-16" type="number">
+            <button class="bg-slate-300 hover:bg-green-800 hover:text-slate-200 transition-all rounded-md px-4 py-2 sell">SELL</button>
+
+            <input placeholder="ADD" class="bg-slate-200 p-2 rounded-md text-center w-16 ml-8">
+            <button class="bg-slate-300 hover:bg-blue-700 hover:text-slate-200 transition-all rounded-md px-4 py-2 add">ADD STOCK</button>
+
+          </div>
+          <div class="gap-6">
+
+            <button class="bg-slate-300 hover:bg-yellow-600 hover:text-slate-200 transition-all rounded-md px-4 py-2 edit">EDIT</button>
+            <button class="bg-slate-300 hover:bg-red-800 hover:text-slate-200 transition-all rounded-md px-4 py-2 delete">DELETE</button>
+
+          </div>
+
+          </div>
+        </form>`;
+
+        itemList.appendChild(newLi);
+
+        document.getElementById("itemName").value = "";
+        document.getElementById("itemDescription").value = "";
+        document.getElementById("itemPrice").value = "";
+        document.getElementById("itemQuantity").value = "";
       })
       .catch((err) => {
-        console.log(err, "here", itemId);
+        console.log(err);
       });
   }
-}
+});
 
+// FUNCTION TO SELL ITEMS
+itemList.addEventListener("click", async (e) => {
+  e.preventDefault();
+  if (e.target.classList.contains("sell")) {
+    let requiredQuantity = e.target.previousElementSibling.value;
+    requiredQuantity = parseInt(requiredQuantity);
+    if (isNaN(requiredQuantity)) {
+      alert("Enter a number");
+    } else {
+      let itemId = e.target.closest("li").id;
+      let parentForm = e.target.closest("form");
+      let itemText = parentForm.querySelector("p");
+      let itemDetails = itemText.textContent.split(" - ");
+      let availableQuantity = parseInt(itemDetails[3]);
+      let newQuantity = availableQuantity - requiredQuantity;
+      if (newQuantity < 0) {
+        alert("Not enough stock available");
+      } else {
+        try {
+          let obj = {
+            itemName: itemDetails[0],
+            itemDescription: itemDetails[1],
+            itemPrice: itemDetails[2],
+            itemQuantity: newQuantity,
+          };
+          await axios.put(
+            `https://crudcrud.com/api/${endpoint}/Items/${itemId}`,
+            obj
+          );
+          itemDetails[3] = newQuantity.toString();
+          itemText.textContent = itemDetails.join(" - ");
+          e.target.previousElementSibling.value = "";
+        } catch (err) {
+          console.log(err, "here");
+          alert("ERROR! CHECK LOG");
+        }
+      }
+    }
+  }
+});
+
+// FUNCTION TO ADD STOCK
+itemList.addEventListener("click", async (e) => {
+  e.preventDefault();
+  if (e.target.classList.contains("add")) {
+    let requiredQuantity = e.target.previousElementSibling.value;
+    requiredQuantity = parseInt(requiredQuantity);
+    if (isNaN(requiredQuantity)) {
+      alert("Enter a number");
+    } else {
+      let itemId = e.target.closest("li").id;
+      let parentForm = e.target.closest("form");
+      let itemText = parentForm.querySelector("p");
+      let itemDetails = itemText.textContent.split(" - ");
+      let availableQuantity = parseInt(itemDetails[3]);
+      let newQuantity = availableQuantity + requiredQuantity;
+
+      try {
+        let obj = {
+          itemName: itemDetails[0],
+          itemDescription: itemDetails[1],
+          itemPrice: itemDetails[2],
+          itemQuantity: newQuantity,
+        };
+        await axios.put(
+          `https://crudcrud.com/api/${endpoint}/Items/${itemId}`,
+          obj
+        );
+        itemDetails[3] = newQuantity.toString();
+        itemText.textContent = itemDetails.join(" - ");
+        e.target.previousElementSibling.value = "";
+      } catch (err) {
+        console.log(err, "here");
+        alert("ERROR! CHECK LOG");
+      }
+    }
+  }
+});
+
+// FUNCTION TO EDIT ITEMS
+itemList.addEventListener("click", async (e) => {
+  e.preventDefault();
+  if (e.target.classList.contains("edit")) {
+    let itemId = e.target.closest("li").id;
+    let parentForm = e.target.closest("form");
+    let itemText = parentForm.querySelector("p");
+    let itemDetails = itemText.textContent.split(" - ");
+
+    document.getElementById("itemName").value = itemDetails[0];
+    document.getElementById("itemDescription").value = itemDetails[1];
+    document.getElementById("itemPrice").value = itemDetails[2];
+    document.getElementById("itemQuantity").value = itemDetails[3];
+
+    try {
+      axios.delete(`https://crudcrud.com/api/${endpoint}/Items/${itemId}`);
+      itemList.removeChild(e.target.closest("li"));
+    } catch (err) {
+      alert("ERROR! CHECK LOGS");
+      console.log(err);
+    }
+  }
+});
+
+// FUNCTION TO DELETE ITEMS
+itemList.addEventListener("click", async (e) => {
+  e.preventDefault();
+  if (e.target.classList.contains("delete")) {
+    let itemId = e.target.closest("li").id;
+
+    try {
+      axios.delete(`https://crudcrud.com/api/${endpoint}/Items/${itemId}`);
+      itemList.removeChild(e.target.closest("li"));
+    } catch (err) {
+      alert("ERROR! CHECK LOGS");
+      console.log(err);
+    }
+  }
+});
+
+// USED TO LOAD ALL THE ITEMS ON PAGE LOAD
 window.addEventListener("DOMContentLoaded", () => {
   axios
-    .get("https://crudcrud.com/api/b46143a747d147569e8d1f11a89c8ea2/Items")
+    .get(`https://crudcrud.com/api/${endpoint}/Items`)
     .then((res) => {
       let data = res.data;
       data.forEach((obj) => {
         let newLi = document.createElement("li");
         newLi.name = obj.itemName;
         newLi.id = obj._id;
-        newLi.className =
-          "flex justify-around items-center gap-16 mx-[20%] my-2";
+        newLi.className = "items-center gap-16 mx-[10%] my-2";
 
-        newLi.innerHTML = `<p>${obj.itemName} - ${obj.itemDescription} - ${obj.itemPrice} - ${obj.itemQuantity}</p>
-    <div class="flex gap-16">
-      <button id="1" class="bg-green-200 rounded-2xl px-4 py-2 sell">Buy 1</button>
-      <button id="2" class="bg-green-200 rounded-2xl px-4 py-2 sell">Buy 2</button>
-      <button id="3" class="bg-green-200 rounded-2xl px-4 py-2 sell">Buy 3</button>
-    </div>`;
+        newLi.innerHTML = `
+        <form class="flex justify-between items-center" >
+
+          <p class="w-1/2 text-slate-100">${obj.itemName} - ${obj.itemDescription} - ${obj.itemPrice} - ${obj.itemQuantity}</p>
+          <div class="flex gap-10 w-fit items-center text-sm">
+
+          <div class="flex gap-2">
+
+            <input id="sell" placeholder="SELL" class="bg-slate-200 p-2 rounded-md text-center w-16" type="number">
+            <button class="bg-slate-300 hover:bg-green-800 hover:text-slate-200 transition-all rounded-md px-4 py-2 sell">SELL</button>
+
+            <input placeholder="ADD" class="bg-slate-200 p-2 rounded-md text-center w-16 ml-8">
+            <button class="bg-slate-300 hover:bg-blue-700 hover:text-slate-200 transition-all rounded-md px-4 py-2 add">ADD STOCK</button>
+
+          </div>
+          <div class="gap-6">
+
+            <button class="bg-slate-300 hover:bg-yellow-600 hover:text-slate-200 transition-all rounded-md px-4 py-2 edit">EDIT</button>
+            <button class="bg-slate-300 hover:bg-red-800 hover:text-slate-200 transition-all rounded-md px-4 py-2 delete">DELETE</button>
+
+          </div>
+
+          </div>
+        </form>`;
 
         itemList.appendChild(newLi);
       });
