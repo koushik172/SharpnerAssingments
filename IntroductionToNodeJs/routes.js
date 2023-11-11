@@ -7,7 +7,7 @@ function requestHandler(req, res) {
   let method = req.method;
 
   if (url === "/") {
-    let message = fs.readFileSync("messege.txt");
+    let message = fs.readFileSync("../messege.txt");
     let text = message.toString().split("+");
     text = text.join(" ");
 
@@ -29,7 +29,7 @@ function requestHandler(req, res) {
     req.on("end", () => {
       const parsedBody = Buffer.concat(body).toString();
       const message = parsedBody.split("=")[1];
-      fs.writeFileSync("messege.txt", message);
+      fs.writeFileSync("../messege.txt", message);
     });
     res.statusCode = 302;
     res.setHeader("Location", "/");
@@ -41,14 +41,12 @@ function requestHandler(req, res) {
   res.write("<body><h1>Welcome to my Node Js project</h1></body>");
   res.write("</html>");
   res.end();
-
-  res.setHeader("Content-Type", "text/html");
 }
 
 // module.exports = requestHandler;
 
 module.exports = {
-  handler: requestHandler,
+  requestHandler: requestHandler,
   text: "Hello!!!",
 };
 
