@@ -5,6 +5,8 @@ import { Product } from "../models/product.js";
 
 export const getAddProduct = (req, res, next) => {
   res.sendFile(path.join(rootDirectory, "views", "add-product.html"));
+  let data = Product.fetchAll();
+  console.log(data);
 };
 
 export const postAddProduct = (req, res, next) => {

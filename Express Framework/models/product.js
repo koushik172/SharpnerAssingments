@@ -1,8 +1,5 @@
 import fs from "fs";
 
-const products = [];
-const p = "./products.txt";
-
 export class Product {
   constructor(title, size) {
     this.title = title;
@@ -10,21 +7,18 @@ export class Product {
   }
 
   save() {
-    products.push(this);
-    fs.writeFileSync(p, JSON.stringify(products), (err) => {
-      if (err) {
-        console.error(err);
-      }
-    });
+    let data;
+    try {
+      data = JSON.parse(fs.readFileSync("./data.txt"));
+    } catch {
+      data = [];
+    }
+    data.push(this);
+    fs.writeFileSync("./data.txt", JSON.stringify(data));
   }
 
   static fetchAll() {
-    fs.readFileSync(p, (err, fileContent) => {
-      if (err) {
-        return [];
-      }
-      let data = JSON.parse(fileContent);
-      return data;
-    });
+    let data = JSON.parse(fs.readFileSync("./data.txt"));
+    return data;
   }
 }
