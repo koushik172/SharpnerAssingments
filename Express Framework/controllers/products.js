@@ -1,12 +1,17 @@
 import path from "path";
 import rootDirectory from "../helper/path.js";
 
+import { Product } from "../models/product.js";
+
 export const getAddProduct = (req, res, next) => {
   res.sendFile(path.join(rootDirectory, "views", "add-product.html"));
 };
 
 export const postAddProduct = (req, res, next) => {
-  console.log(req.body.title, req.body.size);
+  const product = new Product(req.body.title, req.body.size);
+  product.save();
+  let products = Product.fetchAll();
+  console.log(products);
   res.redirect("/");
 };
 
