@@ -1,13 +1,9 @@
-import path from "path";
-
 import express from "express";
 
-import rootDirectory from "../helper/path.js";
+import { getSuccess } from "../controllers/fromController.js";
 
 const fromState = express.Router();
 
-fromState.get("/success", (req, res, next) => {
-  res.sendFile(path.join(rootDirectory, "views", "success.html"));
-});
+fromState.get("/success", getSuccess);
 
 export default fromState;

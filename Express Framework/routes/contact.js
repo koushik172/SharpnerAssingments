@@ -1,18 +1,11 @@
-import path from "path";
-
 import express from "express";
 
-import rootDirectory from "../helper/path.js";
+import { getContact, postContact } from "../controllers/contactController.js";
 
 const contactRoutes = express.Router();
 
-contactRoutes.get("/contact-us", (req, res, next) => {
-  res.sendFile(path.join(rootDirectory, "views", "contact-us.html"));
-});
+contactRoutes.get("/contact-us", getContact);
 
-contactRoutes.post("/contact-us", (req, res, next) => {
-  console.log(req.body.name, req.body.email);
-  res.redirect("/success");
-});
+contactRoutes.post("/contact-us", postContact);
 
 export default contactRoutes;

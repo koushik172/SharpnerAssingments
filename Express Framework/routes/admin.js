@@ -1,18 +1,11 @@
-import path from "path";
-
 import express from "express";
 
-import rootDirectory from "../helper/path.js";
+import { getAddProduct, postAddProduct } from "../controllers/products.js";
 
 const adminRoutes = express.Router();
 
-adminRoutes.get("/add-product", (req, res, next) => {
-  res.sendFile(path.join(rootDirectory, "views", "add-product.html"));
-});
+adminRoutes.get("/add-product", getAddProduct);
 
-adminRoutes.post("/product", (req, res, next) => {
-  console.log(req.body.title, req.body.size);
-  res.redirect("/");
-});
+adminRoutes.post("/product", postAddProduct);
 
 export default adminRoutes;
