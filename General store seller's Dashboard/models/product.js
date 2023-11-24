@@ -1,0 +1,30 @@
+import Sequelize from "sequelize";
+
+import sequelize from "../utils/database.js";
+
+const Product = sequelize.define("products", {
+	id: {
+		type: Sequelize.INTEGER,
+		autoIncrement: true,
+		allowNull: false,
+		primaryKey: true,
+	},
+	name: {
+		type: Sequelize.STRING,
+		allowNull: false,
+	},
+	description: {
+		type: Sequelize.STRING,
+		allowNull: false,
+	},
+	price: {
+		type: Sequelize.INTEGER,
+		allowNull: false,
+	},
+	quantity: {
+		type: Sequelize.INTEGER,
+		allowNull: false,
+	},
+});
+
+export default Product;
