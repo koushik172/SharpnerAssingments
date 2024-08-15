@@ -10,6 +10,8 @@ const errorController = require("./controllers/error");
 // const Cart = require("./models/cart");
 // const CartItem = require("./models/cart-item");
 
+const User = require("./models/user");
+
 const app = express();
 const port = 3000;
 
@@ -25,10 +27,18 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
-	next();
+	User.findUserById("66a3d982fcb510de4700182b")
+		.then((user) => {
+			req.user = new User(user._id, user.name, user.email, user.cart);
+			console.log(req.user);
+			next();
+		})
+		.catch((err) => {
+			console.log(err);
+		});
 });
 
-app.use("/admin", adminRoutes); 
+app.use("/admin", adminRoutes);
 
 app.use(shopRoutes);
 
