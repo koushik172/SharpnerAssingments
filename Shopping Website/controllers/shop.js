@@ -29,7 +29,6 @@ exports.getProduct = (req, res, next) => {
 exports.getIndex = async (req, res, next) => {
 	try {
 		let products = await Product.fetchAll();
-		console.log(products);
 		res.render("shop/index", {
 			prods: products,
 			pageTitle: "Shop",
@@ -79,10 +78,24 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-	res.render("shop/orders", {
-		path: "/orders",
-		pageTitle: "Your Orders",
+	req.user.getOrders().then((orders) => {
+		res.render("shop/orders", {
+			path: "/orders",
+			pageTitle: "Your Orders",
+			orders: orders,
+		});
 	});
+};
+
+exports.postOrder = (req, res, next) => {
+	req.user
+		.addOrder()
+		.then(() => {
+			res.redirect("/orders");
+		})
+		.catch((err) => {
+			console.log(err);
+		});
 };
 
 exports.getCheckout = (req, res, next) => {
