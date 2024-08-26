@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 
 const errorController = require("./controllers/error");
 
-// const User = require("./models/user");
+const User = require("./models/user");
 
 const app = express();
 const port = 3000;
@@ -21,17 +21,17 @@ const shopRoutes = require("./routes/shop");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
-// app.use((req, res, next) => {
-// 	User.findUserById("66a3d982fcb510de4700182b")
-// 		.then((user) => {
-// 			req.user = new User(user._id, user.name, user.email, user.cart);
-// 			console.log(req.user);
-// 			next();
-// 		})
-// 		.catch((err) => {
-// 			console.log(err);
-// 		});
-// });
+app.use((req, res, next) => {
+	User.findById("66cc586664f898e97ebfc5bb")
+		.then((user) => {
+			req.user = user;
+			console.log(req.user);
+			next();
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+});
 
 app.use("/admin", adminRoutes);
 
@@ -41,8 +41,21 @@ app.use(errorController.get404);
 
 async function main() {
 	await mongoose
-		.connect(`mongodb+srv://koushik62:${process.env.MONGO_PASSWORD}@cluster0.st9gmr0.mongodb.net/shop?retryWrites=true&w=majority&appName=Cluster0`)
+		.connect(
+			`mongodb+srv://koushik62:${process.env.MONGO_PASSWORD}@cluster0.st9gmr0.mongodb.net/shop?retryWrites=true&w=majority&appName=Cluster0`
+		)
 		.then(() => {
+			User.findOne().then((user) => {
+				if (!user) {
+					const user = new User({
+						name: "koush",
+						email: "koush@test.com",
+						cart: { items: [] },
+					});
+					user.save();
+				}
+			});
+
 			app.listen(port, () => {
 				console.log(`Server is running on http://localhost:${port}`);
 			});
