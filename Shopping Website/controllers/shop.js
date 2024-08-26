@@ -43,6 +43,8 @@ exports.getCart = (req, res, next) => {
 	req.user
 		.getCart()
 		.then((products) => {
+			console.log(products);
+
 			res.render("shop/cart", {
 				path: "/cart",
 				pageTitle: "Your Cart",
@@ -56,12 +58,12 @@ exports.getCart = (req, res, next) => {
 
 exports.postCart = (req, res, next) => {
 	const productId = req.body.productId;
-	Product.fetchOne(productId)
+	Product.findById(productId)
 		.then((product) => {
 			req.user.addProductToCart(product);
 		})
 		.then((result) => {
-			// console.log(result, "CART UPDATE");
+			console.log(result, "CART UPDATE");
 			res.redirect("/cart");
 		});
 };
