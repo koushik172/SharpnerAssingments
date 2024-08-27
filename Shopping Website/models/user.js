@@ -34,7 +34,7 @@ userSchema.methods.addProductToCart = function (product) {
 	return this.save();
 };
 
-userSchema.methods.getCart = function () {
+userSchema.methods.getCart = async function () {
 	let productIds;
 	if (this.cart.items !== undefined) {
 		productIds = this.cart.items.map((i) => {
@@ -57,6 +57,11 @@ userSchema.methods.getCart = function () {
 				};
 			});
 		});
+};
+
+userSchema.methods.deleteProductFromCart = function (productId) {
+	this.cart.items.pull({ productId: productId });
+	this.save();
 };
 
 module.exports = mongoose.model("User", userSchema);

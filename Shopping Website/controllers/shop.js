@@ -43,8 +43,6 @@ exports.getCart = (req, res, next) => {
 	req.user
 		.getCart()
 		.then((products) => {
-			console.log(products);
-
 			res.render("shop/cart", {
 				path: "/cart",
 				pageTitle: "Your Cart",
@@ -63,20 +61,14 @@ exports.postCart = (req, res, next) => {
 			req.user.addProductToCart(product);
 		})
 		.then((result) => {
-			console.log(result, "CART UPDATE");
 			res.redirect("/cart");
 		});
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
 	const productId = req.body.productId;
-	Product.fetchOne(productId)
-		.then((product) => {
-			req.user.removeProductFromCart(product);
-		})
-		.then((result) => {
-			res.redirect("/cart");
-		});
+	req.user.deleteProductFromCart(productId);
+	res.redirect("/cart");
 };
 
 exports.getOrders = (req, res, next) => {
